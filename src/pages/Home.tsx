@@ -5,7 +5,6 @@ import SearchFilters from "@/components/SearchFilters";
 import RideApplicationDialog from "@/components/RideApplicationDialog";
 import ViewToggle from "@/components/ViewToggle";
 import FloatingAddButton from "@/components/FloatingAddButton";
-
 import {
   Ride,
   ViewMode,
@@ -13,14 +12,14 @@ import {
 } from "@/types/ride";
 import { useToast } from "@/hooks/use-toast";
 import { saveToLocalStorage, getFromLocalStorage } from "@/data/localStorage";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { renderSuggestedDrivers } from "@/components/SuggestedDrivers";
 
 interface ApplicationData {
   message: string;
   contactInfo: string;
   preferences?: string[];
 }
-import { renderSuggestedDrivers } from "@/components/SuggestedDrivers";
 
 const Home = () => {
   const { toast } = useToast();
@@ -231,15 +230,13 @@ const Home = () => {
 
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              Find a ride
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900">Find a ride</h2>
             <p className="text-gray-600">Find your perfect ride match</p>
           </div>
           <div>
             <button
-                className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 shadow-lg"
-                onClick={() => navigate('/add-ride')}
+              className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 shadow-lg"
+              onClick={() => navigate("/add-ride")}
             >
               Offer a Ride
             </button>
