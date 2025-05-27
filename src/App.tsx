@@ -9,6 +9,7 @@ import MyRides from "./pages/MyRides";
 import Analytics from "./pages/Analytics";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
+import AddRide from "./pages/AddRide";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/add-ride" element={<AddRide />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
