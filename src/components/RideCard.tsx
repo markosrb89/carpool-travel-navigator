@@ -106,12 +106,12 @@ const RideCard = ({
           startPoint={{
             lat: ride.departure.coordinates[0],
             lng: ride.departure.coordinates[1],
-            name: ride.departure.location
+            name: ride.departure.location,
           }}
           endPoint={{
             lat: ride.destination.coordinates[0],
             lng: ride.destination.coordinates[1],
-            name: ride.destination.location
+            name: ride.destination.location,
           }}
         />
       </>
@@ -189,10 +189,7 @@ const RideCard = ({
                   {ride.availableSeats} of {ride.totalSeats} seats available
                 </span>
               </div>
-              <div className="flex items-center space-x-1">
-                <Clock className="w-4 h-4" />
-                <span>{ride.duration}</span>
-              </div>
+              
             </div>
           </div>
 
@@ -230,12 +227,12 @@ const RideCard = ({
         startPoint={{
           lat: ride.departure.coordinates[0],
           lng: ride.departure.coordinates[1],
-          name: ride.departure.location
+          name: ride.departure.location,
         }}
         endPoint={{
           lat: ride.destination.coordinates[0],
           lng: ride.destination.coordinates[1],
-          name: ride.destination.location
+          name: ride.destination.location,
         }}
       />
     </>
