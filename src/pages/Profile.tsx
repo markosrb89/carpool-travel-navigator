@@ -1,9 +1,41 @@
-
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import Layout from '@/components/Layout';
 import { User, Star, MapPin, Calendar, Car, Shield } from 'lucide-react';
 
 const Profile = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  const handleEditProfile = () => {
+    // Trigger the hidden file input when button is clicked
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check if file is an image
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file');
+        return;
+      }
+
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size should be less than 5MB');
+        return;
+      }
+
+      // Here you would typically upload the image to your server
+      // For now, we'll just create a preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfileImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -17,9 +49,27 @@ const Profile = () => {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="text-center">
-                <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="w-12 h-12 text-white" />
+                <div 
+                  className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden"
+                  style={{
+                    background: profileImage 
+                      ? `url(${profileImage}) center/cover no-repeat` 
+                      : 'linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to))'
+                  }}
+                >
+                  {!profileImage && (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-500">
+                      <User className="w-12 h-12 text-white" />
+                    </div>
+                  )}
                 </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  className="hidden"
+                />
                 <h2 className="text-xl font-semibold text-gray-900 mb-1">John Doe</h2>
                 <p className="text-gray-600 mb-4">john.doe@example.com</p>
                 
@@ -43,8 +93,11 @@ const Profile = () => {
                   </div>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors mb-2">
-                  Edit Profile
+                <button 
+                  onClick={handleEditProfile}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors mb-2"
+                >
+                  Edit Picture
                 </button>
                 <button className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                   View Public Profile
