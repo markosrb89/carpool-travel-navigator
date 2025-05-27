@@ -36,7 +36,9 @@ const Home = () => {
     saveMockedDataToLocalStorage();
   }, []);
 
-  const mockRides = getFromLocalStorage().mockRides.mockRides ?? [];
+  const data = getFromLocalStorage();
+
+  const mockRides = data.mockRides.mockRides ?? [];
 
   const [filters, setFilters] = useState<SearchFiltersType>({
     query: "",
