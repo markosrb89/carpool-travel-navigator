@@ -38,8 +38,8 @@ const Home = () => {
 
   const data = getFromLocalStorage();
 
-  // Fix the data access pattern to handle null values
-  const mockRides = data?.mockRides?.mockRides ?? [];
+  // Fix the data access pattern to handle null values and ensure it's an array
+  const mockRides: Ride[] = Array.isArray(data?.mockRides?.mockRides) ? data.mockRides.mockRides : [];
 
   const [filters, setFilters] = useState<SearchFiltersType>({
     query: "",
