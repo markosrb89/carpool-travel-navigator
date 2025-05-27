@@ -1,134 +1,232 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
+import { TimeFilter, type TimeRange } from '@/components/analytics/TimeFilter';
+import { Leaderboard } from '@/components/analytics/Leaderboard';
+import { ImpactMetrics } from '@/components/analytics/ImpactMetrics';
+import { Achievements } from '@/components/analytics/Achievements';
+import { PersonalStats } from '@/components/analytics/PersonalStats';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
+} from 'recharts';
 
 const Analytics = () => {
+  const [timeRange, setTimeRange] = React.useState<TimeRange>('month');
+
+  // Mock data - In a real app, this would come from your backend
+  const mockChartData = [
+    { name: 'Jan', rides: 4, savings: 120 },
+    { name: 'Feb', rides: 6, savings: 180 },
+    { name: 'Mar', rides: 8, savings: 240 },
+    { name: 'Apr', rides: 12, savings: 360 },
+  ];
+
+  const mockLeaderboardData = [
+    { id: '1', name: 'John Doe', score: 24, rank: 1, badge: 'Top Driver' },
+    { id: '2', name: 'Jane Smith', score: 20, rank: 2 },
+    { id: '3', name: 'Bob Johnson', score: 18, rank: 3 },
+  ];
+
+  const mockImpactMetrics = [
+    {
+      label: 'CO2 Savings',
+      value: 145,
+      target: 200,
+      unit: 'kg',
+      icon: '🌱'
+    },
+    {
+      label: 'Cost Savings',
+      value: 342,
+      target: 500,
+      unit: '$',
+      icon: '💰'
+    },
+    {
+      label: 'Parking Spots Saved',
+      value: 12,
+      target: 20,
+      unit: 'spots',
+      icon: '🅿️'
+    },
+    {
+      label: 'Total Distance Shared',
+      value: 1240,
+      target: 2000,
+      unit: 'mi',
+      icon: '📍'
+    }
+  ];
+
+  const mockAchievements = [
+    {
+      id: '1',
+      name: 'Early Adopter',
+      description: 'One of the first 100 users',
+      icon: '🌟',
+      earnedDate: '2024-01-15'
+    },
+    {
+      id: '2',
+      name: 'Road Warrior',
+      description: 'Complete 50 trips',
+      icon: '🛣️',
+      progress: 24,
+      total: 50
+    },
+    {
+      id: '3',
+      name: 'Earth Saver',
+      description: 'Save 1000kg of CO2',
+      icon: '🌍',
+      progress: 145,
+      total: 1000
+    },
+    {
+      id: '4',
+      name: 'Community Leader',
+      description: 'Help 20 different people',
+      icon: '👥',
+      progress: 15,
+      total: 20
+    }
+  ];
+
+  const mockPersonalStats = {
+    totalTrips: 24,
+    totalDistance: 1240,
+    totalSavings: 342,
+    totalCo2Saved: 145,
+    frequentRoutes: [
+      {
+        route: 'New York → Boston',
+        trips: 8,
+        distance: 480,
+        costSaved: 120,
+        co2Saved: 60
+      },
+      {
+        route: 'Boston → Philadelphia',
+        trips: 5,
+        distance: 350,
+        costSaved: 85,
+        co2Saved: 45
+      },
+      {
+        route: 'Philadelphia → DC',
+        trips: 3,
+        distance: 180,
+        costSaved: 45,
+        co2Saved: 25
+      }
+    ]
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics</h1>
-          <p className="text-gray-600">Track your travel statistics and savings</p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics</h1>
+            <p className="text-gray-600">Track your carpool impact and statistics</p>
+          </div>
+          <TimeFilter value={timeRange} onChange={setTimeRange} />
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Rides</p>
-                <p className="text-3xl font-bold text-gray-900">24</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-blue-600 text-2xl">🚗</span>
-              </div>
-            </div>
-            <div className="mt-4">
-              <span className="text-green-600 text-sm font-medium">+12% from last month</span>
-            </div>
-          </div>
+        <Tabs defaultValue="personal" className="space-y-8">
+          <TabsList>
+            <TabsTrigger value="personal">Personal Analytics</TabsTrigger>
+            <TabsTrigger value="company">Company Analytics</TabsTrigger>
+          </TabsList>
 
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Money Saved</p>
-                <p className="text-3xl font-bold text-gray-900">$342</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-green-600 text-2xl">💰</span>
-              </div>
-            </div>
-            <div className="mt-4">
-              <span className="text-green-600 text-sm font-medium">+8% from last month</span>
-            </div>
-          </div>
+          <TabsContent value="personal" className="space-y-8">
+            <PersonalStats {...mockPersonalStats} />
 
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">CO2 Saved</p>
-                <p className="text-3xl font-bold text-gray-900">145kg</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-green-600 text-2xl">🌱</span>
-              </div>
-            </div>
-            <div className="mt-4">
-              <span className="text-green-600 text-sm font-medium">+15% from last month</span>
-            </div>
-          </div>
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Rides Over Time</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={mockChartData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="rides" stroke="#2563eb" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
 
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Distance</p>
-                <p className="text-3xl font-bold text-gray-900">1,240mi</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <span className="text-purple-600 text-2xl">📍</span>
-              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Cost Savings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={mockChartData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="savings" stroke="#16a34a" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <div className="mt-4">
-              <span className="text-green-600 text-sm font-medium">+22% from last month</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Monthly Rides Chart */}
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Monthly Rides</h3>
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p className="text-gray-500">Chart placeholder - Monthly rides data</p>
-            </div>
-          </div>
+            <Achievements achievements={mockAchievements} />
+          </TabsContent>
 
-          {/* Savings Over Time Chart */}
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Savings Over Time</h3>
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p className="text-gray-500">Chart placeholder - Savings progression</p>
-            </div>
-          </div>
-        </div>
+          <TabsContent value="company" className="space-y-8">
+            {/* Impact Metrics */}
+            <ImpactMetrics metrics={mockImpactMetrics} />
 
-        {/* Popular Routes */}
-        <div className="mt-8 bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Your Popular Routes</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-4">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className="font-medium text-gray-900">New York → Boston</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">8 trips</span>
-                <span className="text-sm font-medium text-green-600">$120 saved</span>
-              </div>
+            {/* Leaderboards Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <Leaderboard
+                title="Most Rides Offered"
+                entries={mockLeaderboardData}
+                metric="rides"
+              />
+              <Leaderboard
+                title="Most Rides Taken"
+                entries={mockLeaderboardData}
+                metric="rides"
+              />
+              <Leaderboard
+                title="Highest Impact"
+                entries={mockLeaderboardData}
+                metric="kg CO2"
+              />
             </div>
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-4">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="font-medium text-gray-900">Boston → Philadelphia</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">5 trips</span>
-                <span className="text-sm font-medium text-green-600">$85 saved</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-4">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span className="font-medium text-gray-900">Philadelphia → Washington DC</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">3 trips</span>
-                <span className="text-sm font-medium text-green-600">$45 saved</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );

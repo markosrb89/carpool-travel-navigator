@@ -1,37 +1,60 @@
-import React, { useState, useMemo } from 'react';
-import Layout from '@/components/Layout';
-import RideCard from '@/components/RideCard';
-import SearchFilters from '@/components/SearchFilters';
-import RideApplicationDialog from '@/components/RideApplicationDialog';
-import ViewToggle from '@/components/ViewToggle';
-import FloatingAddButton from '@/components/FloatingAddButton';
-import { mockRides } from '@/data/mockRides';
-import { Ride, ViewMode, SearchFilters as SearchFiltersType } from '@/types/ride';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState, useMemo } from "react";
+import Layout from "@/components/Layout";
+import RideCard from "@/components/RideCard";
+import SearchFilters from "@/components/SearchFilters";
+import RideApplicationDialog from "@/components/RideApplicationDialog";
+import ViewToggle from "@/components/ViewToggle";
+import FloatingAddButton from "@/components/FloatingAddButton";
+
+import {
+  Ride,
+  ViewMode,
+  SearchFilters as SearchFiltersType,
+} from "@/types/ride";
+import { useToast } from "@/hooks/use-toast";
+import { saveToLocalStorage, getFromLocalStorage } from "@/data/localStorage";
+import {useNavigate} from "react-router-dom";
+
+interface ApplicationData {
+  message: string;
+  contactInfo: string;
+  preferences?: string[];
+}
+import { renderSuggestedDrivers } from "@/components/SuggestedDrivers";
 
 const Home = () => {
   const { toast } = useToast();
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
   const [isApplicationDialogOpen, setIsApplicationDialogOpen] = useState(false);
   const [isWaitlistMode, setIsWaitlistMode] = useState(false);
-  
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const saveMockedDataToLocalStorage = async () => {
+      saveToLocalStorage();
+    };
+    saveMockedDataToLocalStorage();
+  }, []);
+
+  const mockRides = getFromLocalStorage().mockRides.mockRides ?? [];
+
   const [filters, setFilters] = useState<SearchFiltersType>({
-    query: '',
-    departure: '',
-    destination: '',
-    date: '',
+    query: "",
+    departure: "",
+    destination: "",
+    date: "",
     timeRange: {
-      start: '',
-      end: '',
+      start: "",
+      end: "",
     },
     maxDistance: 50,
-    driverName: '',
+    driverName: "",
   });
 
   // Filter rides based on search criteria
   const filteredRides = useMemo(() => {
-    return mockRides.filter(ride => {
+    return mockRides.filter((ride) => {
       // Text search
       if (filters.query) {
         const searchText = filters.query.toLowerCase();
@@ -39,24 +62,41 @@ const Home = () => {
           ride.departure.location,
           ride.destination.location,
           ride.driver.name,
-          ride.description || '',
-          ...ride.preferences
-        ].join(' ').toLowerCase();
-        
+          ride.description || "",
+          ...ride.preferences,
+        ]
+          .join(" ")
+          .toLowerCase();
+
         if (!searchableText.includes(searchText)) return false;
       }
 
       // Location filters
-      if (filters.departure && !ride.departure.location.toLowerCase().includes(filters.departure.toLowerCase())) {
+      if (
+        filters.departure &&
+        !ride.departure.location
+          .toLowerCase()
+          .includes(filters.departure.toLowerCase())
+      ) {
         return false;
       }
-      
-      if (filters.destination && !ride.destination.location.toLowerCase().includes(filters.destination.toLowerCase())) {
+
+      if (
+        filters.destination &&
+        !ride.destination.location
+          .toLowerCase()
+          .includes(filters.destination.toLowerCase())
+      ) {
         return false;
       }
 
       // Driver name filter
-      if (filters.driverName && !ride.driver.name.toLowerCase().includes(filters.driverName.toLowerCase())) {
+      if (
+        filters.driverName &&
+        !ride.driver.name
+          .toLowerCase()
+          .includes(filters.driverName.toLowerCase())
+      ) {
         return false;
       }
 
@@ -66,11 +106,17 @@ const Home = () => {
       }
 
       // Time range filter
-      if (filters.timeRange.start && ride.departure.time < filters.timeRange.start) {
+      if (
+        filters.timeRange.start &&
+        ride.departure.time < filters.timeRange.start
+      ) {
         return false;
       }
-      
-      if (filters.timeRange.end && ride.departure.time > filters.timeRange.end) {
+
+      if (
+        filters.timeRange.end &&
+        ride.departure.time > filters.timeRange.end
+      ) {
         return false;
       }
 
@@ -95,11 +141,11 @@ const Home = () => {
     setIsApplicationDialogOpen(true);
   };
 
-  const handleSubmitApplication = (applicationData: any) => {
-    console.log('Application submitted:', applicationData);
+  const handleSubmitApplication = (applicationData: ApplicationData) => {
+    console.log("Application submitted:", applicationData);
     toast({
-      title: isWaitlistMode ? 'Added to Waitlist' : 'Application Submitted',
-      description: isWaitlistMode 
+      title: isWaitlistMode ? "Added to Waitlist" : "Application Submitted",
+      description: isWaitlistMode
         ? "You've been added to the waitlist. We'll notify you if a seat becomes available."
         : "Your ride application has been submitted. The driver will review and respond soon.",
     });
@@ -107,21 +153,21 @@ const Home = () => {
 
   const clearFilters = () => {
     setFilters({
-      query: '',
-      departure: '',
-      destination: '',
-      date: '',
+      query: "",
+      departure: "",
+      destination: "",
+      date: "",
       timeRange: {
-        start: '',
-        end: '',
+        start: "",
+        end: "",
       },
       maxDistance: 50,
-      driverName: '',
+      driverName: "",
     });
   };
 
   const renderRidesList = () => {
-    if (viewMode === 'map') {
+    if (viewMode === "map") {
       return (
         <div className="bg-gray-100 rounded-lg p-8 text-center">
           <h3 className="text-lg font-semibold text-gray-600 mb-2">Map View</h3>
@@ -136,15 +182,20 @@ const Home = () => {
           <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-gray-400 text-4xl">🔍</span>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No rides found</h3>
-          <p className="text-gray-600 mb-4">Try adjusting your search filters or check back later</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            No rides found
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Try adjusting your search filters or check back later
+          </p>
         </div>
       );
     }
 
-    const gridClass = viewMode === 'grid' 
-      ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'
-      : 'space-y-4';
+    const gridClass =
+      viewMode === "grid"
+        ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+        : "space-y-4";
 
     return (
       <div className={gridClass}>
@@ -154,7 +205,7 @@ const Home = () => {
             ride={ride}
             onApply={handleApplyForRide}
             onJoinWaitlist={handleJoinWaitlist}
-            isCompact={viewMode === 'list'}
+            isCompact={viewMode === "list"}
           />
         ))}
       </div>
@@ -173,13 +224,23 @@ const Home = () => {
             </span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Connect with fellow travelers, share rides, and make your commute more affordable and sustainable.
+            Connect with fellow travelers, share rides, and make your commute
+            more affordable and sustainable.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 transform hover:scale-105 shadow-lg">
-              Find a Ride
-            </button>
-            <button className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 shadow-lg">
+        </div>
+
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Find a ride
+            </h2>
+            <p className="text-gray-600">Find your perfect ride match</p>
+          </div>
+          <div>
+            <button
+                className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                onClick={() => navigate('/add-ride')}
+            >
               Offer a Ride
             </button>
           </div>
@@ -192,13 +253,15 @@ const Home = () => {
           onClearFilters={clearFilters}
         />
 
+        {/* Rides List */}
+        {renderSuggestedDrivers()}
+
         {/* View Controls */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 mt-8">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
               Available Rides ({filteredRides.length})
             </h2>
-            <p className="text-gray-600">Find your perfect ride match</p>
           </div>
           <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
         </div>
