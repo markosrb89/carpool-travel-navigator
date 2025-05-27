@@ -20,6 +20,7 @@ interface ApplicationData {
   contactInfo: string;
   preferences?: string[];
 }
+import { renderSuggestedDrivers } from "@/components/SuggestedDrivers";
 
 const Home = () => {
   const { toast } = useToast();
@@ -252,8 +253,11 @@ const Home = () => {
           onClearFilters={clearFilters}
         />
 
+        {/* Rides List */}
+        {renderSuggestedDrivers()}
+
         {/* View Controls */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 mt-8">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
               Available Rides ({filteredRides.length})

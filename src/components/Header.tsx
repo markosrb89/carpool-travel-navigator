@@ -1,8 +1,14 @@
-
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, MessageSquare, LogOut, ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  Menu,
+  X,
+  User,
+  MessageSquare,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -10,14 +16,15 @@ const Header = () => {
   const location = useLocation();
 
   const navigationItems = [
-    { name: 'Home', href: '/' },
-    { name: 'My Rides', href: '/my-rides' },
-    { name: 'Analytics', href: '/analytics' },
+    { name: "Home", href: "/" },
+    { name: "My Rides", href: "/my-rides" },
+    { name: "Analytics", href: "/analytics" },
+    { name: "Leaderboard", href: "/leaderboard" },
   ];
 
   const isActiveRoute = (href: string) => {
-    if (href === '/' && location.pathname === '/') return true;
-    if (href !== '/' && location.pathname.startsWith(href)) return true;
+    if (href === "/" && location.pathname === "/") return true;
+    if (href !== "/" && location.pathname.startsWith(href)) return true;
     return false;
   };
 
@@ -46,8 +53,7 @@ const Header = () => {
                   isActiveRoute(item.href)
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
-                )}
-              >
+                )}>
                 {item.name}
               </Link>
             ))}
@@ -58,8 +64,7 @@ const Header = () => {
             <div className="relative">
               <button
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-2"
-              >
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-white" />
                 </div>
@@ -72,16 +77,14 @@ const Header = () => {
                     <Link
                       to="/messages"
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setIsProfileDropdownOpen(false)}
-                    >
+                      onClick={() => setIsProfileDropdownOpen(false)}>
                       <MessageSquare className="w-4 h-4 mr-3" />
                       Messages
                     </Link>
                     <Link
                       to="/profile"
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setIsProfileDropdownOpen(false)}
-                    >
+                      onClick={() => setIsProfileDropdownOpen(false)}>
                       <User className="w-4 h-4 mr-3" />
                       User Profile
                     </Link>
@@ -90,9 +93,8 @@ const Header = () => {
                       onClick={() => {
                         setIsProfileDropdownOpen(false);
                         // Handle logout
-                        console.log('Logout clicked');
-                      }}
-                    >
+                        console.log("Logout clicked");
+                      }}>
                       <LogOut className="w-4 h-4 mr-3" />
                       Log Out
                     </button>
@@ -106,9 +108,12 @@ const Header = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 p-2 rounded-md"
-            >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              className="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 p-2 rounded-md">
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -127,27 +132,24 @@ const Header = () => {
                       ? "text-blue-600 bg-blue-50"
                       : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
                   )}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
+                  onClick={() => setIsMobileMenuOpen(false)}>
                   {item.name}
                 </Link>
               ))}
-              
+
               {/* Mobile Profile Links */}
               <div className="border-t border-gray-100 pt-4 mt-4">
                 <Link
                   to="/messages"
                   className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
+                  onClick={() => setIsMobileMenuOpen(false)}>
                   <MessageSquare className="w-5 h-5 mr-3" />
                   Messages
                 </Link>
                 <Link
                   to="/profile"
                   className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
+                  onClick={() => setIsMobileMenuOpen(false)}>
                   <User className="w-5 h-5 mr-3" />
                   User Profile
                 </Link>
@@ -155,9 +157,8 @@ const Header = () => {
                   className="flex items-center w-full px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    console.log('Logout clicked');
-                  }}
-                >
+                    console.log("Logout clicked");
+                  }}>
                   <LogOut className="w-5 h-5 mr-3" />
                   Log Out
                 </button>
