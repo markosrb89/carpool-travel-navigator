@@ -1,10 +1,157 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { User, Star, MapPin, Calendar, Car, Shield } from 'lucide-react';
+import { getFromLocalStorage } from '@/data/localStorage';
+
+export interface PersonalInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  bio: string;
+}
+
+export interface VehicleInfo {
+  make: string;
+  model: string;
+  year: string;
+  color: string;
+  licensePlate: string;
+}
+
+export interface PreferencesInfo {
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  showPhoneNumber: boolean;
+  preferredLocation: string;
+}
 
 const Profile = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+
+
+  const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    bio: ''
+  });
+  const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo>({
+    make: '',
+    model: '',
+    year: '',
+    color: '',
+    licensePlate: ''
+  });
+  const [preferences, setPreferences] = useState<PreferencesInfo>({
+    emailNotifications: true,
+    smsNotifications: true,
+    showPhoneNumber: false,
+    preferredLocation: ''
+  });
+
+  const fetchUserData = async () => {
+    try {
+      const data = getFromLocalStorage();
+      const personalData = data?.userProfile.mockPersonalData as PersonalInfo;
+      const personalDataVehicle = data?.userProfile.mockVehicleData as VehicleInfo;
+      const personalDataPreferences = data?.userProfile.mockPreferences as PreferencesInfo;
+
+  // console.log('data.userProfile.mockVehicleData: ', data.userProfile.mockVehicleData);
+      const personalDataFromLocal = {
+        firstName: personalData.firstName,
+        lastName: personalData.lastName,
+        email: personalData.email,
+        phone: personalData.phone,
+        bio: personalData.bio
+      };
+
+      const personalVehicleData = {
+        make: personalDataVehicle.make,
+        model: personalDataVehicle.model,
+        year: personalDataVehicle.year,
+        color: personalDataVehicle.color,
+        licensePlate: personalDataVehicle.licensePlate
+      };
+
+      const personalPreferences = {
+        emailNotifications: personalDataPreferences.emailNotifications,
+        smsNotifications: personalDataPreferences.smsNotifications,
+        showPhoneNumber: personalDataPreferences.showPhoneNumber,
+        preferredLocation: personalDataPreferences.preferredLocation
+      };
+
+      setPersonalInfo(personalDataFromLocal);
+      setVehicleInfo(personalVehicleData);
+      setPreferences(personalPreferences);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setPersonalInfo(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleVehicleInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setVehicleInfo(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPreferences(prev => ({
+      ...prev,
+      preferredLocation: e.target.value
+    }));
+  };
+
+  const handlePreferenceChange = (name: keyof PreferencesInfo) => {
+    if (typeof preferences[name] === 'boolean') {
+      setPreferences(prev => ({
+        ...prev,
+        [name]: !prev[name]
+      }));
+    }
+  };
+
+  const handleSavePersonalInfo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // This is where you would make an API call to update personal info
+      console.log('Saving personal info:', personalInfo);
+      // await updatePersonalInfo(personalInfo);
+      alert('Personal information updated successfully!');
+    } catch (error) {
+      console.error('Error saving personal info:', error);
+      alert('Failed to update personal information');
+    }
+  };
+
+  const handleUpdateVehicle = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // This is where you would make an API call to update vehicle info
+      console.log('Updating vehicle info:', vehicleInfo);
+      // await updateVehicleInfo(vehicleInfo);
+      alert('Vehicle information updated successfully!');
+    } catch (error) {
+      console.error('Error updating vehicle info:', error);
+      alert('Failed to update vehicle information');
+    }
+  };
 
   const handleEditProfile = () => {
     // Trigger the hidden file input when button is clicked
@@ -129,13 +276,15 @@ const Profile = () => {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-6">Personal Information</h3>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSavePersonalInfo}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
                     <input
                       type="text"
-                      defaultValue="John"
+                      name="firstName"
+                      value={personalInfo.firstName}
+                      onChange={handlePersonalInfoChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -143,7 +292,9 @@ const Profile = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
                     <input
                       type="text"
-                      defaultValue="Doe"
+                      name="lastName"
+                      value={personalInfo.lastName}
+                      onChange={handlePersonalInfoChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -152,7 +303,9 @@ const Profile = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                   <input
                     type="email"
-                    defaultValue="john.doe@example.com"
+                    name="email"
+                    value={personalInfo.email}
+                    onChange={handlePersonalInfoChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -160,15 +313,19 @@ const Profile = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
                   <input
                     type="tel"
-                    defaultValue="+1 (555) 123-4567"
+                    name="phone"
+                    value={personalInfo.phone}
+                    onChange={handlePersonalInfoChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
                   <textarea
+                    name="bio"
+                    value={personalInfo.bio}
+                    onChange={handlePersonalInfoChange}
                     rows={3}
-                    defaultValue="I'm a frequent traveler who loves meeting new people and sharing rides. Always punctual and enjoy good conversation!"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -181,13 +338,15 @@ const Profile = () => {
             {/* Vehicle Information */}
             <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-6">Vehicle Information</h3>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleUpdateVehicle}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Make</label>
                     <input
                       type="text"
-                      defaultValue="Toyota"
+                      name="make"
+                      value={vehicleInfo.make}
+                      onChange={handleVehicleInfoChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -195,7 +354,9 @@ const Profile = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
                     <input
                       type="text"
-                      defaultValue="Camry"
+                      name="model"
+                      value={vehicleInfo.model}
+                      onChange={handleVehicleInfoChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -205,7 +366,9 @@ const Profile = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
                     <input
                       type="text"
-                      defaultValue="2020"
+                      name="year"
+                      value={vehicleInfo.year}
+                      onChange={handleVehicleInfoChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -213,7 +376,9 @@ const Profile = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
                     <input
                       type="text"
-                      defaultValue="Silver"
+                      name="color"
+                      value={vehicleInfo.color}
+                      onChange={handleVehicleInfoChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -222,7 +387,9 @@ const Profile = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">License Plate</label>
                   <input
                     type="text"
-                    defaultValue="ABC-1234"
+                    name="licensePlate"
+                    value={vehicleInfo.licensePlate}
+                    onChange={handleVehicleInfoChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -235,14 +402,19 @@ const Profile = () => {
             {/* Preferences */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-6">Preferences</h3>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-gray-900">Email Notifications</p>
                     <p className="text-sm text-gray-600">Receive emails about ride updates</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={preferences.emailNotifications}
+                      onChange={() => handlePreferenceChange('emailNotifications')}
+                    />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
@@ -252,7 +424,12 @@ const Profile = () => {
                     <p className="text-sm text-gray-600">Receive text messages for urgent updates</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={preferences.smsNotifications}
+                      onChange={() => handlePreferenceChange('smsNotifications')}
+                    />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
@@ -262,9 +439,29 @@ const Profile = () => {
                     <p className="text-sm text-gray-600">Allow other users to see your phone number</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" />
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={preferences.showPhoneNumber}
+                      onChange={() => handlePreferenceChange('showPhoneNumber')}
+                    />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
+                </div>
+                <div className="space-y-2">
+                  <div>
+                    <p className="font-medium text-gray-900">Preferred Pickup/Dropoff Location</p>
+                    <p className="text-sm text-gray-600 mb-2">Set your default location for rides</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="text"
+                      value={preferences.preferredLocation}
+                      onChange={handleLocationChange}
+                      placeholder="Enter your preferred location"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
