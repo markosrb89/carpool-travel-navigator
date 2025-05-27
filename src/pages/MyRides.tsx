@@ -1,8 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@/components/Layout';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from '@radix-ui/react-dialog';
+import { DialogHeader } from '@/components/ui/dialog';
+import AddRideForm from '@/components/AddRideForm';
 
 const MyRides = () => {
+  const [isAddOpen, setAddOpen] = useState(false)
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -60,7 +65,7 @@ const MyRides = () => {
             </div>
           </div>
 
-          {/* Add New Ride Card */}
+ <Dialog open={isAddOpen} onOpenChange={setAddOpen}>
           <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl border-2 border-dashed border-blue-300 hover:border-blue-400 transition-colors duration-200">
             <div className="p-6 text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -68,11 +73,43 @@ const MyRides = () => {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Add New Ride</h3>
               <p className="text-gray-600 mb-4">Offer a ride or search for one</p>
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                Get Started
-              </button>
+
+              <DialogTrigger asChild>
+                <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  Get Started
+                </button>
+              </DialogTrigger>
             </div>
           </div>
+
+          <DialogPortal>
+            <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
+
+            <DialogContent 
+            className="fixed top-1/2 left-1/2 w-full max-w-2xl
+                          max-h-[90vh]         
+                           -translate-x-1/2 -translate-y-1/2
+                           overflow-y-auto   
+                           rounded-lg bg-white p-6
+                           shadow-lg
+                           z-50 
+                         "
+            >
+              <DialogClose asChild>
+                <button className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                  ✕
+                </button>
+              </DialogClose>
+
+              <DialogTitle className="text-xl font-bold">Create a New Ride</DialogTitle>
+              <DialogDescription className="text-gray-600 mb-4">
+                Fill out the details below to offer your ride.
+              </DialogDescription>
+
+              <AddRideForm onCancel={() => setAddOpen(false)} />
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
         </div>
 
         {/* Empty State (when no rides) */}

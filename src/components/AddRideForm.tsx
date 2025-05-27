@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,12 +30,50 @@ const rideFormSchema = z.object({
   recurringDays: z.array(z.string()).optional(),
   recurringEndDate: z.string().optional(),
   hasReturnTrip: z.boolean(),
-  pickupWindow: z.number().min(5).max(60),
+  pickupWindow: z.number().min(5, 'Minimum pickup window is 5 minutes').max(60, 'Maximum pickup window is 60 minutes'),
+}).refine((data) => {
+  // If it's a return trip, validate return date and time
+  if (data.hasReturnTrip) {
+    if (!data.returnDate || !data.returnTime) {
+      return false;
+    }
+    
+    const departureDateTime = new Date(`${data.departureDate}T${data.departureTime}`);
+    const returnDateTime = new Date(`${data.returnDate}T${data.returnTime}`);
+    
+    return returnDateTime >= departureDateTime;
+  }
+  return true;
+}, {
+  message: "Return trip must be scheduled after departure",
+  path: ["returnDate"]
+}).refine((data) => {
+  // If it's a recurring ride, validate recurring days and end date
+  if (data.isRecurring) {
+    if (!data.recurringDays || data.recurringDays.length === 0) {
+      return false;
+    }
+    
+    if (data.recurringEndDate) {
+      const startDate = new Date(data.departureDate);
+      const endDate = new Date(data.recurringEndDate);
+      return endDate >= startDate;
+    }
+  }
+  return true;
+}, {
+  message: "Please select at least one recurring day and ensure end date is after start date",
+  path: ["recurringDays"]
 });
 
 type RideFormData = z.infer<typeof rideFormSchema>;
 
-const AddRideForm = () => {
+interface AddRideFormProps {
+ 
+  onCancel?: () => void;
+}
+
+const AddRideForm: React.FC<AddRideFormProps> = ({ onCancel }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,6 +88,7 @@ const AddRideForm = () => {
       isRecurring: false,
       hasReturnTrip: false,
       pickupWindow: 15,
+      recurringDays: [],
     },
   });
 
@@ -61,9 +99,26 @@ const AddRideForm = () => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
+    // Create success message based on scheduling options
+    let description = `Your ride from ${data.departureLocation} to ${data.destinationLocation} has been posted.`;
+    
+    if (data.isRecurring) {
+      description += ` This is a recurring ride on ${data.recurringDays?.join(', ')}`;
+      if (data.recurringEndDate) {
+        description += ` until ${new Date(data.recurringEndDate).toLocaleDateString()}`;
+      }
+      description += '.';
+    }
+    
+    if (data.hasReturnTrip) {
+      description += ` A return trip is scheduled for ${new Date(data.returnDate!).toLocaleDateString()} at ${data.returnTime}.`;
+    }
+    
+    description += ` Pickup window: ${data.pickupWindow} minutes.`;
+    
     toast({
       title: 'Ride Created Successfully!',
-      description: 'Your ride has been posted and is now available for passengers to book.',
+      description,
     });
     
     setIsSubmitting(false);
@@ -317,7 +372,13 @@ const AddRideForm = () => {
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => navigate('/')}
+              onClick={() => {
+                if (onCancel) {
+                  onCancel();
+                } else {
+                  navigate('/my-rides');
+                }
+              }}
               disabled={isSubmitting}
             >
               Cancel
