@@ -38,7 +38,8 @@ const Home = () => {
 
   const data = getFromLocalStorage();
 
-  const mockRides = data.mockRides.mockRides ?? [];
+  // Fix the data access pattern to handle null values
+  const mockRides = data?.mockRides?.mockRides ?? [];
 
   const [filters, setFilters] = useState<SearchFiltersType>({
     query: "",
@@ -128,7 +129,7 @@ const Home = () => {
 
       return true;
     });
-  }, [filters]);
+  }, [filters, mockRides]);
 
   const handleApplyForRide = (ride: Ride) => {
     setSelectedRide(ride);
