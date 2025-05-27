@@ -1,4 +1,3 @@
-
 export interface Ride {
   id: string;
   driver: {
@@ -7,6 +6,7 @@ export interface Ride {
     avatar?: string;
     rating: number;
     verified: boolean;
+    totalRides: number;
   };
   departure: {
     location: string;
@@ -33,7 +33,7 @@ export interface Ride {
   waitlistCount: number;
 }
 
-export type ViewMode = 'grid' | 'list' | 'map';
+export type ViewMode = "grid" | "list" | "map";
 
 export interface SearchFilters {
   query: string;
