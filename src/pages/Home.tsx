@@ -5,14 +5,15 @@ import SearchFilters from "@/components/SearchFilters";
 import RideApplicationDialog from "@/components/RideApplicationDialog";
 import ViewToggle from "@/components/ViewToggle";
 import FloatingAddButton from "@/components/FloatingAddButton";
-import { mockRides } from "@/data/mockRides";
+
 import {
   Ride,
   ViewMode,
   SearchFilters as SearchFiltersType,
 } from "@/types/ride";
 import { useToast } from "@/hooks/use-toast";
-import { saveToLocalStorage } from "@/data/localStorage";
+import { saveToLocalStorage, getFromLocalStorage } from "@/data/localStorage";
+import {useNavigate} from "react-router-dom";
 
 interface ApplicationData {
   message: string;
@@ -26,6 +27,7 @@ const Home = () => {
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
   const [isApplicationDialogOpen, setIsApplicationDialogOpen] = useState(false);
   const [isWaitlistMode, setIsWaitlistMode] = useState(false);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const saveMockedDataToLocalStorage = async () => {
@@ -33,6 +35,8 @@ const Home = () => {
     };
     saveMockedDataToLocalStorage();
   }, []);
+
+  const mockRides = getFromLocalStorage().mockRides.mockRides ?? [];
 
   const [filters, setFilters] = useState<SearchFiltersType>({
     query: "",
@@ -222,11 +226,20 @@ const Home = () => {
             Connect with fellow travelers, share rides, and make your commute
             more affordable and sustainable.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 transform hover:scale-105 shadow-lg">
-              Find a Ride
-            </button>
-            <button className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 shadow-lg">
+        </div>
+
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Find a ride
+            </h2>
+            <p className="text-gray-600">Find your perfect ride match</p>
+          </div>
+          <div>
+            <button
+                className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                onClick={() => navigate('/add-ride')}
+            >
               Offer a Ride
             </button>
           </div>
@@ -245,7 +258,6 @@ const Home = () => {
             <h2 className="text-2xl font-bold text-gray-900">
               Available Rides ({filteredRides.length})
             </h2>
-            <p className="text-gray-600">Find your perfect ride match</p>
           </div>
           <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
         </div>
