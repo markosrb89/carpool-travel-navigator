@@ -13,6 +13,14 @@ import {
 } from "@/types/ride";
 import { useToast } from "@/hooks/use-toast";
 import { renderSuggestedDrivers } from "@/components/SuggestedDrivers";
+import { saveToLocalStorage } from "@/data/localStorage";
+
+interface ApplicationData {
+  pickupLocation: string;
+  message: string;
+  agreedToTerms: boolean;
+  phoneNumber: string;
+}
 
 const Home = () => {
   const { toast } = useToast();
@@ -20,6 +28,14 @@ const Home = () => {
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
   const [isApplicationDialogOpen, setIsApplicationDialogOpen] = useState(false);
   const [isWaitlistMode, setIsWaitlistMode] = useState(false);
+
+
+  React.useEffect(() => {
+    const saveMockedDataToLocalStorage = async () => {
+      saveToLocalStorage();
+    };
+    saveMockedDataToLocalStorage();
+  }, []);
 
   const [filters, setFilters] = useState<SearchFiltersType>({
     query: "",
@@ -123,8 +139,8 @@ const Home = () => {
     setIsApplicationDialogOpen(true);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSubmitApplication = (applicationData: any) => {
+
+  const handleSubmitApplication = (applicationData: ApplicationData) => {
     console.log("Application submitted:", applicationData);
     toast({
       title: isWaitlistMode ? "Added to Waitlist" : "Application Submitted",
