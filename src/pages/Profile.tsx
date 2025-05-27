@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { User, Star, MapPin, Calendar, Car, Shield } from 'lucide-react';
-import { getFromLocalStorage } from '@/data/localStorage';
+import { getFromLocalStorage, updateModuleProperty } from '@/data/localStorage';
 
 export interface PersonalInfo {
   firstName: string;
@@ -130,26 +130,30 @@ const Profile = () => {
   const handleSavePersonalInfo = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // This is where you would make an API call to update personal info
-      console.log('Saving personal info:', personalInfo);
-      // await updatePersonalInfo(personalInfo);
-      alert('Personal information updated successfully!');
+      await updateModuleProperty('userProfile', 'mockPersonalData', personalInfo);
     } catch (error) {
       console.error('Error saving personal info:', error);
-      alert('Failed to update personal information');
     }
   };
 
   const handleUpdateVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // This is where you would make an API call to update vehicle info
-      console.log('Updating vehicle info:', vehicleInfo);
-      // await updateVehicleInfo(vehicleInfo);
-      alert('Vehicle information updated successfully!');
+      await updateModuleProperty('userProfile', 'mockVehicleData', vehicleInfo);
     } catch (error) {
       console.error('Error updating vehicle info:', error);
-      alert('Failed to update vehicle information');
+    }
+  };
+
+  const handleSaveAllChanges = async () => {
+    try {
+      await Promise.all([
+        updateModuleProperty('userProfile', 'mockPersonalData', personalInfo),
+        updateModuleProperty('userProfile', 'mockVehicleData', vehicleInfo),
+        updateModuleProperty('userProfile', 'mockPreferences', preferences)
+      ]);
+    } catch (error) {
+      console.error('Error saving all changes:', error);
     }
   };
 
@@ -462,6 +466,14 @@ const Profile = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
+                </div>
+                <div className="pt-4 border-t border-gray-200">
+                  <button
+                    onClick={handleSaveAllChanges}
+                    className="w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Save all changes
+                  </button>
                 </div>
               </div>
             </div>
