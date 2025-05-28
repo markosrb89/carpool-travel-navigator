@@ -5,7 +5,8 @@ export const mockPersonalData: PersonalInfo = {
     lastName: 'Doe',
     email: 'john.doe@example.com',
     phone: '+1 (555) 123-4567',
-    bio: "I'm a frequent traveler who loves meeting new people and sharing rides. Always punctual and enjoy good conversation!"
+    bio: "I'm a frequent traveler who loves meeting new people and sharing rides. Always punctual and enjoy good conversation!",
+    profileImage: null
 };
 
 export const mockVehicleData: VehicleInfo = {
