@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { RotateCcw, Calendar, Clock } from 'lucide-react';
+import { RotateCcw, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface SchedulingOptionsProps {
   form: UseFormReturn<any>;
@@ -13,6 +13,8 @@ interface SchedulingOptionsProps {
 const SchedulingOptions = ({ form }: SchedulingOptionsProps) => {
   const watchIsRecurring = form.watch('isRecurring');
   const watchHasReturnTrip = form.watch('hasReturnTrip');
+  const watchDepartureDate = form.watch('departureDate');
+  const watchDepartureTime = form.watch('departureTime');
 
   const daysOfWeek = [
     { id: 'monday', label: 'Monday' },
@@ -23,6 +25,19 @@ const SchedulingOptions = ({ form }: SchedulingOptionsProps) => {
     { id: 'saturday', label: 'Saturday' },
     { id: 'sunday', label: 'Sunday' },
   ];
+
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
+
+  // Calculate minimum return time based on departure
+  const getMinReturnTime = () => {
+    if (watchDepartureDate && watchDepartureTime) {
+      const departureDateTime = new Date(`${watchDepartureDate}T${watchDepartureTime}`);
+      departureDateTime.setMinutes(departureDateTime.getMinutes() + 30); // Minimum 30 minutes after departure
+      return departureDateTime.toTimeString().slice(0, 5);
+    }
+    return '';
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -40,7 +55,14 @@ const SchedulingOptions = ({ form }: SchedulingOptionsProps) => {
             <FormControl>
               <Checkbox
                 checked={field.value}
-                onCheckedChange={field.onChange}
+                onCheckedChange={(checked) => {
+                  field.onChange(checked);
+                  if (!checked) {
+                    // Clear recurring options when unchecked
+                    form.setValue('recurringDays', []);
+                    form.setValue('recurringEndDate', '');
+                  }
+                }}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
@@ -95,7 +117,11 @@ const SchedulingOptions = ({ form }: SchedulingOptionsProps) => {
               <FormItem className="mt-4">
                 <FormLabel>End Date (Optional)</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} />
+                  <Input 
+                    type="date" 
+                    {...field} 
+                    min={watchDepartureDate || today}
+                  />
                 </FormControl>
                 <FormDescription>
                   When should this recurring ride schedule end?
@@ -104,6 +130,15 @@ const SchedulingOptions = ({ form }: SchedulingOptionsProps) => {
               </FormItem>
             )}
           />
+
+          {form.watch('recurringDays')?.length === 0 && (
+            <Alert variant="destructive" className="mt-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Please select at least one day for the recurring ride
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
       )}
 
@@ -116,7 +151,14 @@ const SchedulingOptions = ({ form }: SchedulingOptionsProps) => {
             <FormControl>
               <Checkbox
                 checked={field.value}
-                onCheckedChange={field.onChange}
+                onCheckedChange={(checked) => {
+                  field.onChange(checked);
+                  if (!checked) {
+                    // Clear return trip details when unchecked
+                    form.setValue('returnDate', '');
+                    form.setValue('returnTime', '');
+                  }
+                }}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
@@ -143,7 +185,11 @@ const SchedulingOptions = ({ form }: SchedulingOptionsProps) => {
                 <FormItem>
                   <FormLabel>Return Date</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input 
+                      type="date" 
+                      {...field} 
+                      min={watchDepartureDate || today}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -157,8 +203,15 @@ const SchedulingOptions = ({ form }: SchedulingOptionsProps) => {
                 <FormItem>
                   <FormLabel>Return Time</FormLabel>
                   <FormControl>
-                    <Input type="time" {...field} />
+                    <Input 
+                      type="time" 
+                      {...field}
+                      min={field.value === watchDepartureDate ? getMinReturnTime() : undefined}
+                    />
                   </FormControl>
+                  <FormDescription>
+                    {field.value === watchDepartureDate && 'Must be at least 30 minutes after departure'}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
