@@ -1,19 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { LocationSelectorProps, SearchResult, LocationData } from './types';
-import LocationInput from './LocationInput';
-import SearchResults from './SearchResults';
-import LocationMap from './LocationMap';
+import React, { useState, useRef, useEffect } from "react";
+import { LocationSelectorProps, SearchResult, LocationData } from "./types";
+import LocationInput from "./LocationInput";
+import SearchResults from "./SearchResults";
+import LocationMap from "./LocationMap";
 
 const LocationSelector: React.FC<LocationSelectorProps> = ({
   value,
   onChange,
   placeholder,
-  className
+  className,
 }) => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(
+    null
+  );
   const [mapCenter, setMapCenter] = useState<[number, number]>([51.505, -0.09]);
   const [showMap, setShowMap] = useState(false);
   const searchTimeoutRef = useRef<number>();
@@ -38,22 +40,21 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
         )}&limit=5&addressdetails=1`,
         {
           headers: {
-            'Accept': 'application/json',
-            'User-Agent': 'CarPoolApp/1.0'
-          }
+            Accept: "application/json",
+            "User-Agent": "CarPoolApp/1.0",
+          },
         }
       );
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      console.log('Search results:', data); // Debug log
       setSearchResults(data);
       setShowDropdown(true);
     } catch (error) {
-      console.error('Error searching locations:', error);
+      console.error("Error searching locations:", error);
       setSearchResults([]);
     } finally {
       setIsSearching(false);
@@ -63,13 +64,13 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
   const handleLocationSelect = async (result: SearchResult) => {
     const lat = parseFloat(result.lat);
     const lng = parseFloat(result.lon);
-    
+
     setSelectedLocation({
       address: result.display_name,
       lat,
-      lng
+      lng,
     });
-    
+
     setMapCenter([lat, lng]);
     onChange(result.display_name);
     setShowDropdown(false);
@@ -83,27 +84,27 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.lat}&lon=${position.lng}`,
         {
           headers: {
-            'Accept': 'application/json',
-            'User-Agent': 'CarPoolApp/1.0'
-          }
+            Accept: "application/json",
+            "User-Agent": "CarPoolApp/1.0",
+          },
         }
       );
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       setSelectedLocation({
         address: data.display_name,
         lat: position.lat,
-        lng: position.lng
+        lng: position.lng,
       });
-      
+
       onChange(data.display_name);
     } catch (error) {
-      console.error('Error reverse geocoding:', error);
+      console.error("Error reverse geocoding:", error);
     }
   };
 
@@ -114,7 +115,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
   const handleUseCurrentLocation = () => {
     if (navigator.geolocation) {
       setIsSearching(true);
-      
+
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
@@ -123,35 +124,35 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
               {
                 headers: {
-                  'Accept': 'application/json',
-                  'User-Agent': 'CarPoolApp/1.0'
-                }
+                  Accept: "application/json",
+                  "User-Agent": "CarPoolApp/1.0",
+                },
               }
             );
-            
+
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
+
             setSelectedLocation({
               address: data.display_name,
               lat: latitude,
-              lng: longitude
+              lng: longitude,
             });
-            
+
             setMapCenter([latitude, longitude]);
             onChange(data.display_name);
             setShowMap(true);
           } catch (error) {
-            console.error('Error getting location:', error);
+            console.error("Error getting location:", error);
           } finally {
             setIsSearching(false);
           }
         },
         (error) => {
-          console.error('Error getting current location:', error);
+          console.error("Error getting current location:", error);
           setIsSearching(false);
         }
       );
@@ -171,14 +172,17 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -194,14 +198,14 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
           isSearching={isSearching}
           placeholder={placeholder}
         />
-        
+
         <SearchResults
           results={searchResults}
           onSelect={handleLocationSelect}
           showDropdown={showDropdown}
         />
       </div>
-      
+
       {showMap && (
         <LocationMap
           center={mapCenter}

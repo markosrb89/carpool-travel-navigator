@@ -25,39 +25,33 @@ import {
 import { CalendarIcon, MapPin, Users, Euro } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import LocationSelector from "./LocationSelector";
+import LocationSelector from "./location/LocationSelector";
 import SchedulingOptions from "./SchedulingOptions";
 import { getFromLocalStorage, updateModuleProperty } from "@/data/localStorage";
 import { StoredData } from "@/types/ride";
-
-const rideFormSchema = z.object({
-  departureLocation: z.string().min(3, "Departure location is required"),
-  destinationLocation: z.string().min(3, "Destination location is required"),
-  departureDate: z.string().min(1, "Departure date is required"),
-  departureTime: z.string().min(1, "Departure time is required"),
-  returnDate: z.string().optional(),
-  returnTime: z.string().optional(),
-  availableSeats: z
-    .number()
-    .min(1, "At least 1 seat must be available")
-    .max(8, "Maximum 8 seats"),
-  fuelCost: z.number().min(0, "Fuel cost must be positive"),
-  parkingCost: z.number().min(0, "Parking cost must be positive"),
-  hasFreeParking: z.boolean(),
-  message: z.string().optional(),
-  isRecurring: z.boolean(),
-  recurringDays: z.array(z.string()).optional(),
-  recurringEndDate: z.string().optional(),
-  hasReturnTrip: z.boolean(),
-  pickupWindow: z.number().min(5).max(60),
-});
-
-type RideFormData = z.infer<typeof rideFormSchema>;
+import { DriverInfoSection } from "./ride-form";
+import { rideFormSchema, RideFormData } from "./ride-form/types";
 
 const AddRideForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const data = getFromLocalStorage();
+  const { firstName, lastName, phone, email } = data.userProfile
+    .mockPersonalData as {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+  };
+  const { color, licensePlate, make, model, year } = data.userProfile
+    .mockVehicleData as {
+    color: string;
+    licensePlate: string;
+    make: string;
+    model: string;
+    year: number;
+  };
 
   const calculateRidePrice = (
     fuelCost: number,
@@ -71,7 +65,7 @@ const AddRideForm = () => {
   };
 
   const form = useForm<RideFormData>({
-    resolver: zodResolver(rideFormSchema),
+    // resolver: zodResolver(rideFormSchema),
     defaultValues: {
       availableSeats: 1,
       fuelCost: 0,
@@ -80,6 +74,14 @@ const AddRideForm = () => {
       isRecurring: false,
       hasReturnTrip: false,
       pickupWindow: 15,
+      driverName: `${firstName} ${lastName}`,
+      driverEmail: email,
+      driverPhone: phone,
+      vehicleMake: make,
+      vehicleModel: model,
+      vehicleYear: year,
+      vehicleColor: color,
+      licensePlate: licensePlate,
     },
   });
 
@@ -139,6 +141,7 @@ const AddRideForm = () => {
   return (
     <div className="max-w-4xl mx-auto">
       <Form {...form}>
+        <DriverInfoSection form={form} />
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Location Section */}
           <div className="bg-white rounded-lg shadow-md p-6">
