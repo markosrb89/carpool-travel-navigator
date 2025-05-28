@@ -15,11 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 import { saveToLocalStorage, getFromLocalStorage } from "@/data/localStorage";
 import {useNavigate} from "react-router-dom";
 
-interface ApplicationData {
-  message: string;
-  contactInfo: string;
-  preferences?: string[];
-}
 import { renderSuggestedDrivers } from "@/components/SuggestedDrivers";
 
 const Home = () => {
@@ -37,7 +32,8 @@ const Home = () => {
     saveMockedDataToLocalStorage();
   }, []);
 
-  const mockRides = getFromLocalStorage().mockRides.mockRides ?? [];
+  const localStorageData = getFromLocalStorage();
+  const mockRides: Ride[] = (localStorageData?.mockRides?.mockRides as Ride[]) || [];
 
   const [filters, setFilters] = useState<SearchFiltersType>({
     query: "",
@@ -141,7 +137,7 @@ const Home = () => {
     setIsApplicationDialogOpen(true);
   };
 
-  const handleSubmitApplication = (applicationData: ApplicationData) => {
+  const handleSubmitApplication = (applicationData: { pickupLocation: string; message: string; agreedToTerms: boolean; phoneNumber: string }) => {
     console.log("Application submitted:", applicationData);
     toast({
       title: isWaitlistMode ? "Added to Waitlist" : "Application Submitted",
