@@ -59,9 +59,10 @@ const RideApplicationDialog = ({
           agreedToTerms: false,
           phoneNumber: "",
         });
-        onClose();
+        return onClose();
       }
       navigate("/login");
+      return;
     }
   };
 
