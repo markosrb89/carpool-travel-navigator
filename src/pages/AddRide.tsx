@@ -1,8 +1,9 @@
+import React from "react";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import AddRideForm from "@/components/AddRideForm";
+import AddRideForm from "@/components/ride-form/AddRideForm";
 
 const AddRide = () => {
   const navigate = useNavigate();
