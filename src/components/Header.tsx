@@ -10,20 +10,20 @@ import {
   LogIn,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/auth";
 import { useToast } from "@/hooks/use-toast";
+import { useAuthContext } from "../context/AuthContext";
 
 const Header = () => {
+  const { logout, isAuthenticated } = useAuthContext();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
 
   const navigationItems = [
     { name: "Home", href: "/" },
-    { name: "My Rides", href: "/my-rides" },
+    ...(isAuthenticated ? [{ name: "My Rides", href: "/my-rides" }] : []),
     { name: "Analytics", href: "/analytics" },
     { name: "Leaderboard", href: "/leaderboard" },
   ];
@@ -40,6 +40,7 @@ const Header = () => {
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
+      variant: "success",
     });
     navigate("/");
   };

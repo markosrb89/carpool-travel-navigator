@@ -1,9 +1,10 @@
 import React from "react";
-import { mockRides } from "@/data/mockRides";
 import { Avatar } from "./ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Star } from "lucide-react";
+import { getFromLocalStorage } from "@/data/localStorage";
+import { StoredData } from "@/types/ride";
 
 interface Driver {
   id: string;
@@ -14,6 +15,8 @@ interface Driver {
 }
 
 export function renderSuggestedDrivers() {
+  const data = getFromLocalStorage() as unknown as StoredData;
+  const mockRides = data?.mockRides?.allRides || [];
   // Extract unique drivers from mock rides
   const uniqueDrivers = mockRides.reduce<Driver[]>((drivers, ride) => {
     const existingDriver = drivers.find(
@@ -48,26 +51,30 @@ export function renderSuggestedDrivers() {
                   {driver.totalRides >= 100 ? (
                     <Badge
                       variant="outline"
-                      className="bg-yellow-100 text-yellow-800 border-yellow-300">
+                      className="bg-yellow-100 text-yellow-800 border-yellow-300"
+                    >
                       🥇 Gold
                     </Badge>
                   ) : driver.totalRides >= 50 ? (
                     <Badge
                       variant="outline"
-                      className="bg-gray-200 text-gray-700 border-gray-400">
+                      className="bg-gray-200 text-gray-700 border-gray-400"
+                    >
                       🥈 Silver
                     </Badge>
                   ) : driver.totalRides >= 10 ? (
                     <Badge
                       variant="outline"
-                      className="bg-amber-200 text-amber-800 border-amber-400">
+                      className="bg-amber-200 text-amber-800 border-amber-400"
+                    >
                       🥉 Bronze
                     </Badge>
                   ) : null}
                   {driver.verified && (
                     <Badge
                       variant="outline"
-                      className="bg-green-50 text-green-700 border-green-200">
+                      className="bg-green-50 text-green-700 border-green-200"
+                    >
                       Verified
                     </Badge>
                   )}

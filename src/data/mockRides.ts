@@ -1,6 +1,6 @@
-import { Ride } from "@/types/ride";
+import { Ride, StoredDataRide } from "@/types/ride";
 
-export const mockRides: Ride[] = [
+export const allRides: Ride[] = [
   {
     id: "1",
     driver: {
@@ -91,4 +91,40 @@ export const mockRides: Ride[] = [
     preferences: ["Pet-friendly", "Conversation welcome"],
     waitlistCount: 2,
   },
+];
+
+export const upcomingRides: StoredDataRide[] = [
+  {
+    date: "Today",
+    time: "5:30 PM",
+    departure: "Divcibare",
+    destination: "Belgrade",
+    name: "Petar Petrovic",
+    status: "Confirmed",
+    price: "12 EUR",
+  },
+];
+
+export const pastRides: StoredDataRide[] = [
+  {
+    date: "Yesterday",
+    time: "7:30 AM",
+    departure: "Belgrade",
+    destination: "Divcibare",
+    name: "Petar Petrovic",
+    status: "Confirmed",
+    price: "15 EUR",
+  },
+];
+
+export const myOffers = [
+  // {
+  //   date: "Yesterday",
+  //   time: "7:30 AM",
+  //   departure: "Belgrade",
+  //   destination: "Divcibare",
+  //   status: "Recurring",
+  //   price: "1000 din",
+  //   seats: "3/3 seats filled",
+  // },
 ];

@@ -9,37 +9,34 @@ import {
   Ride,
   ViewMode,
   SearchFilters as SearchFiltersType,
+  StoredData,
 } from "@/types/ride";
 import { useToast } from "@/hooks/use-toast";
-import { saveToLocalStorage, getFromLocalStorage } from "@/data/localStorage";
+import { getFromLocalStorage } from "@/data/localStorage";
 import { useNavigate } from "react-router-dom";
 import { renderSuggestedDrivers } from "@/components/SuggestedDrivers";
+import { useAuthContext } from "../context/AuthContext";
 
 interface ApplicationData {
+  pickupLocation: string;
   message: string;
-  contactInfo: string;
-  preferences?: string[];
+  agreedToTerms: boolean;
+  phoneNumber: string;
 }
 
 const Home = () => {
   const { toast } = useToast();
+  const { isAuthenticated } = useAuthContext();
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
   const [isApplicationDialogOpen, setIsApplicationDialogOpen] = useState(false);
   const [isWaitlistMode, setIsWaitlistMode] = useState(false);
   const navigate = useNavigate();
+  const data = getFromLocalStorage() as unknown as StoredData;
 
-  React.useEffect(() => {
-    const saveMockedDataToLocalStorage = async () => {
-      saveToLocalStorage();
-    };
-    saveMockedDataToLocalStorage();
-  }, []);
-
-  const data = getFromLocalStorage();
-
-  // Fix the data access pattern to handle null values and ensure it's an array
-  const mockRides: Ride[] = Array.isArray(data?.mockRides?.mockRides) ? data.mockRides.mockRides : [];
+  const mockRides = React.useMemo(() => {
+    return data?.mockRides?.allRides ?? [];
+  }, [data?.mockRides?.allRides]);
 
   const [filters, setFilters] = useState<SearchFiltersType>({
     query: "",
@@ -56,6 +53,8 @@ const Home = () => {
 
   // Filter rides based on search criteria
   const filteredRides = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
     return mockRides.filter((ride) => {
       // Text search
       if (filters.query) {
@@ -129,7 +128,17 @@ const Home = () => {
 
       return true;
     });
-  }, [filters, mockRides]);
+  }, [
+    filters.date,
+    filters.departure,
+    filters.destination,
+    filters.driverName,
+    filters.maxDistance,
+    filters.query,
+    filters.timeRange.end,
+    filters.timeRange.start,
+    mockRides,
+  ]);
 
   const handleApplyForRide = (ride: Ride) => {
     setSelectedRide(ride);
@@ -144,12 +153,12 @@ const Home = () => {
   };
 
   const handleSubmitApplication = (applicationData: ApplicationData) => {
-    console.log("Application submitted:", applicationData);
     toast({
       title: isWaitlistMode ? "Added to Waitlist" : "Application Submitted",
       description: isWaitlistMode
         ? "You've been added to the waitlist. We'll notify you if a seat becomes available."
         : "Your ride application has been submitted. The driver will review and respond soon.",
+      variant: "success",
     });
   };
 
@@ -236,14 +245,16 @@ const Home = () => {
             <h2 className="text-2xl font-bold text-gray-900">Find a ride</h2>
             <p className="text-gray-600">Find your perfect ride match</p>
           </div>
-          <div>
-            <button
-              className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 shadow-lg"
-              onClick={() => navigate("/add-ride")}
-            >
-              Offer a Ride
-            </button>
-          </div>
+          {isAuthenticated && (
+            <div>
+              <button
+                className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                onClick={() => navigate("/add-ride")}
+              >
+                Offer a Ride
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Search and Filters */}
@@ -270,7 +281,7 @@ const Home = () => {
         {renderRidesList()}
 
         {/* Floating Add Button */}
-        <FloatingAddButton />
+        {isAuthenticated && <FloatingAddButton />}
 
         {/* Application Dialog */}
         <RideApplicationDialog

@@ -1,7 +1,7 @@
-import React, { useRef, useState, useEffect } from 'react';
-import Layout from '@/components/Layout';
-import { User, Star, MapPin, Calendar, Car, Shield } from 'lucide-react';
-import { getFromLocalStorage, updateModuleProperty } from '@/data/localStorage';
+import React, { useRef, useState, useEffect } from "react";
+import Layout from "@/components/Layout";
+import { User, Star, Car, Shield } from "lucide-react";
+import { getFromLocalStorage, updateModuleProperty } from "@/data/localStorage";
 
 export interface PersonalInfo {
   firstName: string;
@@ -30,42 +30,42 @@ const Profile = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
-
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    bio: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    bio: "",
   });
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo>({
-    make: '',
-    model: '',
-    year: '',
-    color: '',
-    licensePlate: ''
+    make: "",
+    model: "",
+    year: "",
+    color: "",
+    licensePlate: "",
   });
   const [preferences, setPreferences] = useState<PreferencesInfo>({
     emailNotifications: true,
     smsNotifications: true,
     showPhoneNumber: false,
-    preferredLocation: ''
+    preferredLocation: "",
   });
 
   const fetchUserData = async () => {
     try {
       const data = getFromLocalStorage();
       const personalData = data?.userProfile.mockPersonalData as PersonalInfo;
-      const personalDataVehicle = data?.userProfile.mockVehicleData as VehicleInfo;
-      const personalDataPreferences = data?.userProfile.mockPreferences as PreferencesInfo;
+      const personalDataVehicle = data?.userProfile
+        .mockVehicleData as VehicleInfo;
+      const personalDataPreferences = data?.userProfile
+        .mockPreferences as PreferencesInfo;
 
-  // console.log('data.userProfile.mockVehicleData: ', data.userProfile.mockVehicleData);
       const personalDataFromLocal = {
         firstName: personalData.firstName,
         lastName: personalData.lastName,
         email: personalData.email,
         phone: personalData.phone,
-        bio: personalData.bio
+        bio: personalData.bio,
       };
 
       const personalVehicleData = {
@@ -73,21 +73,21 @@ const Profile = () => {
         model: personalDataVehicle.model,
         year: personalDataVehicle.year,
         color: personalDataVehicle.color,
-        licensePlate: personalDataVehicle.licensePlate
+        licensePlate: personalDataVehicle.licensePlate,
       };
 
       const personalPreferences = {
         emailNotifications: personalDataPreferences.emailNotifications,
         smsNotifications: personalDataPreferences.smsNotifications,
         showPhoneNumber: personalDataPreferences.showPhoneNumber,
-        preferredLocation: personalDataPreferences.preferredLocation
+        preferredLocation: personalDataPreferences.preferredLocation,
       };
 
       setPersonalInfo(personalDataFromLocal);
       setVehicleInfo(personalVehicleData);
       setPreferences(personalPreferences);
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
     }
   };
 
@@ -95,34 +95,36 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
-  const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handlePersonalInfoChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setPersonalInfo(prev => ({
+    setPersonalInfo((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleVehicleInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setVehicleInfo(prev => ({
+    setVehicleInfo((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPreferences(prev => ({
+    setPreferences((prev) => ({
       ...prev,
-      preferredLocation: e.target.value
+      preferredLocation: e.target.value,
     }));
   };
 
   const handlePreferenceChange = (name: keyof PreferencesInfo) => {
-    if (typeof preferences[name] === 'boolean') {
-      setPreferences(prev => ({
+    if (typeof preferences[name] === "boolean") {
+      setPreferences((prev) => ({
         ...prev,
-        [name]: !prev[name]
+        [name]: !prev[name],
       }));
     }
   };
@@ -130,30 +132,35 @@ const Profile = () => {
   const handleSavePersonalInfo = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateModuleProperty('userProfile', 'mockPersonalData', personalInfo);
+      await updateModuleProperty(
+        "userProfile",
+        "mockPersonalData",
+        personalInfo
+      );
     } catch (error) {
-      console.error('Error saving personal info:', error);
+      console.error("Error saving personal info:", error);
+      alert("Failed to update personal information");
     }
   };
 
   const handleUpdateVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateModuleProperty('userProfile', 'mockVehicleData', vehicleInfo);
+      await updateModuleProperty("userProfile", "mockVehicleData", vehicleInfo);
     } catch (error) {
-      console.error('Error updating vehicle info:', error);
+      console.error("Error updating vehicle info:", error);
     }
   };
 
   const handleSaveAllChanges = async () => {
     try {
       await Promise.all([
-        updateModuleProperty('userProfile', 'mockPersonalData', personalInfo),
-        updateModuleProperty('userProfile', 'mockVehicleData', vehicleInfo),
-        updateModuleProperty('userProfile', 'mockPreferences', preferences)
+        updateModuleProperty("userProfile", "mockPersonalData", personalInfo),
+        updateModuleProperty("userProfile", "mockVehicleData", vehicleInfo),
+        updateModuleProperty("userProfile", "mockPreferences", preferences),
       ]);
     } catch (error) {
-      console.error('Error saving all changes:', error);
+      console.error("Error saving all changes:", error);
     }
   };
 
@@ -166,14 +173,14 @@ const Profile = () => {
     const file = event.target.files?.[0];
     if (file) {
       // Check if file is an image
-      if (!file.type.startsWith('image/')) {
-        alert('Please upload an image file');
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload an image file");
         return;
       }
 
       // Check file size (limit to 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('File size should be less than 5MB');
+        alert("File size should be less than 5MB");
         return;
       }
 
@@ -191,7 +198,9 @@ const Profile = () => {
     <Layout>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">User Profile</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            User Profile
+          </h1>
           <p className="text-gray-600">Manage your profile and preferences</p>
         </div>
 
@@ -200,12 +209,12 @@ const Profile = () => {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="text-center">
-                <div 
+                <div
                   className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden"
                   style={{
-                    background: profileImage 
-                      ? `url(${profileImage}) center/cover no-repeat` 
-                      : 'linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to))'
+                    background: profileImage
+                      ? `url(${profileImage}) center/cover no-repeat`
+                      : "linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to))",
                   }}
                 >
                   {!profileImage && (
@@ -221,15 +230,22 @@ const Profile = () => {
                   accept="image/*"
                   className="hidden"
                 />
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">John Doe</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-1">
+                  John Doe
+                </h2>
                 <p className="text-gray-600 mb-4">john.doe@example.com</p>
-                
+
                 {/* Rating */}
                 <div className="flex items-center justify-center space-x-1 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    />
                   ))}
-                  <span className="text-sm text-gray-600 ml-2">4.9 (127 reviews)</span>
+                  <span className="text-sm text-gray-600 ml-2">
+                    4.9 (127 reviews)
+                  </span>
                 </div>
 
                 {/* Verification Badges */}
@@ -244,7 +260,7 @@ const Profile = () => {
                   </div>
                 </div>
 
-                <button 
+                <button
                   onClick={handleEditProfile}
                   className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors mb-2"
                 >
@@ -258,7 +274,9 @@ const Profile = () => {
 
             {/* Quick Stats */}
             <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Quick Stats
+              </h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Member since</span>
@@ -279,11 +297,15 @@ const Profile = () => {
           {/* Profile Details */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Personal Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                Personal Information
+              </h3>
               <form className="space-y-4" onSubmit={handleSavePersonalInfo}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      First Name
+                    </label>
                     <input
                       type="text"
                       name="firstName"
@@ -293,7 +315,9 @@ const Profile = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Last Name
+                    </label>
                     <input
                       type="text"
                       name="lastName"
@@ -304,7 +328,9 @@ const Profile = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
                   <input
                     type="email"
                     name="email"
@@ -314,7 +340,9 @@ const Profile = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number
+                  </label>
                   <input
                     type="tel"
                     name="phone"
@@ -324,7 +352,9 @@ const Profile = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bio
+                  </label>
                   <textarea
                     name="bio"
                     value={personalInfo.bio}
@@ -333,7 +363,10 @@ const Profile = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
                   Save Changes
                 </button>
               </form>
@@ -341,11 +374,15 @@ const Profile = () => {
 
             {/* Vehicle Information */}
             <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Vehicle Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                Vehicle Information
+              </h3>
               <form className="space-y-4" onSubmit={handleUpdateVehicle}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Make</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Make
+                    </label>
                     <input
                       type="text"
                       name="make"
@@ -355,7 +392,9 @@ const Profile = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Model
+                    </label>
                     <input
                       type="text"
                       name="model"
@@ -367,7 +406,9 @@ const Profile = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Year
+                    </label>
                     <input
                       type="text"
                       name="year"
@@ -377,7 +418,9 @@ const Profile = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Color
+                    </label>
                     <input
                       type="text"
                       name="color"
@@ -388,7 +431,9 @@ const Profile = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">License Plate</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    License Plate
+                  </label>
                   <input
                     type="text"
                     name="licensePlate"
@@ -397,7 +442,10 @@ const Profile = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
                   Update Vehicle
                 </button>
               </form>
@@ -405,57 +453,79 @@ const Profile = () => {
 
             {/* Preferences */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Preferences</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                Preferences
+              </h3>
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">Email Notifications</p>
-                    <p className="text-sm text-gray-600">Receive emails about ride updates</p>
+                    <p className="font-medium text-gray-900">
+                      Email Notifications
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Receive emails about ride updates
+                    </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
                       checked={preferences.emailNotifications}
-                      onChange={() => handlePreferenceChange('emailNotifications')}
+                      onChange={() =>
+                        handlePreferenceChange("emailNotifications")
+                      }
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">SMS Notifications</p>
-                    <p className="text-sm text-gray-600">Receive text messages for urgent updates</p>
+                    <p className="font-medium text-gray-900">
+                      SMS Notifications
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Receive text messages for urgent updates
+                    </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
                       checked={preferences.smsNotifications}
-                      onChange={() => handlePreferenceChange('smsNotifications')}
+                      onChange={() =>
+                        handlePreferenceChange("smsNotifications")
+                      }
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">Show Phone Number</p>
-                    <p className="text-sm text-gray-600">Allow other users to see your phone number</p>
+                    <p className="font-medium text-gray-900">
+                      Show Phone Number
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Allow other users to see your phone number
+                    </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
                       checked={preferences.showPhoneNumber}
-                      onChange={() => handlePreferenceChange('showPhoneNumber')}
+                      onChange={() => handlePreferenceChange("showPhoneNumber")}
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
                 <div className="space-y-2">
                   <div>
-                    <p className="font-medium text-gray-900">Preferred Pickup/Dropoff Location</p>
-                    <p className="text-sm text-gray-600 mb-2">Set your default location for rides</p>
+                    <p className="font-medium text-gray-900">
+                      Preferred Pickup/Dropoff Location
+                    </p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Set your default location for rides
+                    </p>
                   </div>
                   <div className="flex items-center gap-4">
                     <input

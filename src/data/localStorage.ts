@@ -39,8 +39,11 @@ export async function getDataModules(): Promise<Modules> {
  */
 export async function saveToLocalStorage(): Promise<void> {
   try {
-    const modules = await getDataModules();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(modules));
+    const storedData = localStorage.getItem(STORAGE_KEY);
+    if (!storedData) {
+      const modules = await getDataModules();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(modules));
+    }
   } catch (error) {
     console.error("Error saving to localStorage:", error);
   }

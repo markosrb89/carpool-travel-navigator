@@ -47,3 +47,26 @@ export interface SearchFilters {
   maxDistance: number;
   driverName: string;
 }
+
+export interface StoredDataRide {
+  date: string;
+  time: string;
+  departure: string;
+  destination: string;
+  name: string;
+  status: string;
+  price: string;
+}
+
+export interface MyOffer extends Omit<StoredDataRide, "name"> {
+  seats: string;
+}
+
+export interface StoredData {
+  mockRides: {
+    upcomingRides: StoredDataRide[];
+    pastRides: StoredDataRide[];
+    myOffers: MyOffer[];
+    allRides: Ride[];
+  };
+}

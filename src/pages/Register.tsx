@@ -3,9 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/auth";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
+import { useAuthContext } from "../context/AuthContext";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -13,7 +13,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { register } = useAuth();
+  const { register } = useAuthContext();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -37,6 +37,7 @@ const Register = () => {
         toast({
           title: "Registration Successful",
           description: "Welcome to CarPool! You can now start sharing rides.",
+          variant: "success",
         });
         navigate("/");
       } else {
