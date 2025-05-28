@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Menu,
@@ -12,14 +12,25 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAuthContext } from "../context/AuthContext";
+import { getFromLocalStorage } from "@/data/localStorage";
+import { PersonalInfo } from "@/pages/Profile";
 
 const Header = () => {
   const { logout, isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const location = useLocation();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const data = getFromLocalStorage();
+    const personalData = data?.userProfile.mockPersonalData as PersonalInfo;
+    if (personalData?.profileImage) {
+      setProfileImage(personalData.profileImage);
+    }
+  }, []);
 
   const navigationItems = [
     { name: "Home", href: "/" },
@@ -87,8 +98,15 @@ const Header = () => {
                   }
                   className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-2"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden"
+                    style={{
+                      background: profileImage 
+                        ? `url(${profileImage}) center/cover no-repeat` 
+                        : 'linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to))'
+                    }}
+                  >
+                    {!profileImage && <User className="w-4 h-4 text-white" />}
                   </div>
                   <ChevronDown className="w-4 h-4" />
                 </button>
@@ -183,6 +201,18 @@ const Header = () => {
               <div className="border-t border-gray-100 pt-4 mt-4">
                 {isAuthenticated ? (
                   <>
+                    <div className="px-3 py-2 mb-2">
+                      <div 
+                        className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden mx-auto"
+                        style={{
+                          background: profileImage 
+                            ? `url(${profileImage}) center/cover no-repeat` 
+                            : 'linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to))'
+                        }}
+                      >
+                        {!profileImage && <User className="w-6 h-6 text-white" />}
+                      </div>
+                    </div>
                     <Link
                       to="/messages"
                       className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"

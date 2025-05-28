@@ -9,6 +9,7 @@ export interface PersonalInfo {
   email: string;
   phone: string;
   bio: string;
+  profileImage: string | null;
 }
 
 export interface VehicleInfo {
@@ -36,6 +37,7 @@ const Profile = () => {
     email: "",
     phone: "",
     bio: "",
+    profileImage: null
   });
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo>({
     make: "",
@@ -66,6 +68,7 @@ const Profile = () => {
         email: personalData.email,
         phone: personalData.phone,
         bio: personalData.bio,
+        profileImage: personalData.profileImage
       };
 
       const personalVehicleData = {
@@ -86,6 +89,7 @@ const Profile = () => {
       setPersonalInfo(personalDataFromLocal);
       setVehicleInfo(personalVehicleData);
       setPreferences(personalPreferences);
+      setProfileImage(personalData.profileImage);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -172,23 +176,29 @@ const Profile = () => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Check if file is an image
       if (!file.type.startsWith("image/")) {
         alert("Please upload an image file");
         return;
       }
 
-      // Check file size (limit to 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert("File size should be less than 5MB");
         return;
       }
 
-      // Here you would typically upload the image to your server
-      // For now, we'll just create a preview
       const reader = new FileReader();
       reader.onload = (e) => {
-        setProfileImage(e.target?.result as string);
+        const imageData = e.target?.result as string;
+        setProfileImage(imageData);
+        setPersonalInfo(prev => ({
+          ...prev,
+          profileImage: imageData
+        }));
+        // Save immediately when image is changed
+        updateModuleProperty("userProfile", "mockPersonalData", {
+          ...personalInfo,
+          profileImage: imageData
+        });
       };
       reader.readAsDataURL(file);
     }
