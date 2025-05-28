@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/auth";
 import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -49,7 +49,10 @@ const Login = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <Link to="/" className="flex items-center justify-center space-x-2 mb-8">
+          <Link
+            to="/"
+            className="flex items-center justify-center space-x-2 mb-8"
+          >
             <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xl">C</span>
             </div>
@@ -57,6 +60,17 @@ const Login = () => {
           </Link>
           <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
           <p className="mt-2 text-gray-600">Sign in to your account</p>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              <Link
+                to="/"
+                className="inline-flex items-center font-medium text-blue-600 hover:text-blue-500"
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                <span>Go Back</span>
+              </Link>
+            </p>
+          </div>
         </div>
 
         <div className="bg-white py-8 px-6 shadow-lg rounded-xl">

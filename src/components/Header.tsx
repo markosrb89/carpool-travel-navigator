@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -70,7 +69,8 @@ const Header = () => {
                   isActiveRoute(item.href)
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
-                )}>
+                )}
+              >
                 {item.name}
               </Link>
             ))}
@@ -78,11 +78,14 @@ const Header = () => {
 
           {/* User Profile Dropdown or Login */}
           <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated ? (
+            {isAuthenticated && (
               <div className="relative">
                 <button
-                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-2">
+                  onClick={() =>
+                    setIsProfileDropdownOpen(!isProfileDropdownOpen)
+                  }
+                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-2"
+                >
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />
                   </div>
@@ -95,20 +98,23 @@ const Header = () => {
                       <Link
                         to="/messages"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsProfileDropdownOpen(false)}>
+                        onClick={() => setIsProfileDropdownOpen(false)}
+                      >
                         <MessageSquare className="w-4 h-4 mr-3" />
                         Messages
                       </Link>
                       <Link
                         to="/profile"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsProfileDropdownOpen(false)}>
+                        onClick={() => setIsProfileDropdownOpen(false)}
+                      >
                         <User className="w-4 h-4 mr-3" />
                         User Profile
                       </Link>
                       <button
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={handleLogout}>
+                        onClick={handleLogout}
+                      >
                         <LogOut className="w-4 h-4 mr-3" />
                         Log Out
                       </button>
@@ -116,17 +122,21 @@ const Header = () => {
                   </div>
                 )}
               </div>
-            ) : (
+            )}
+
+            {!isAuthenticated && (
               <div className="flex items-center space-x-2">
                 <Link
                   to="/login"
-                  className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                  className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                >
                   <LogIn className="w-4 h-4" />
                   <span>Login</span>
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
                   Sign Up
                 </Link>
               </div>
@@ -137,7 +147,8 @@ const Header = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 p-2 rounded-md">
+              className="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 p-2 rounded-md"
+            >
               {isMobileMenuOpen ? (
                 <X className="w-6 h-6" />
               ) : (
@@ -161,7 +172,8 @@ const Header = () => {
                       ? "text-blue-600 bg-blue-50"
                       : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
                   )}
-                  onClick={() => setIsMobileMenuOpen(false)}>
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   {item.name}
                 </Link>
               ))}
@@ -173,14 +185,16 @@ const Header = () => {
                     <Link
                       to="/messages"
                       className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
-                      onClick={() => setIsMobileMenuOpen(false)}>
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
                       <MessageSquare className="w-5 h-5 mr-3" />
                       Messages
                     </Link>
                     <Link
                       to="/profile"
                       className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
-                      onClick={() => setIsMobileMenuOpen(false)}>
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
                       <User className="w-5 h-5 mr-3" />
                       User Profile
                     </Link>
@@ -189,7 +203,8 @@ const Header = () => {
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleLogout();
-                      }}>
+                      }}
+                    >
                       <LogOut className="w-5 h-5 mr-3" />
                       Log Out
                     </button>
@@ -199,14 +214,16 @@ const Header = () => {
                     <Link
                       to="/login"
                       className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
-                      onClick={() => setIsMobileMenuOpen(false)}>
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
                       <LogIn className="w-5 h-5 mr-3" />
                       Login
                     </Link>
                     <Link
                       to="/register"
                       className="flex items-center px-3 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md ml-3 mr-3"
-                      onClick={() => setIsMobileMenuOpen(false)}>
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
                       Sign Up
                     </Link>
                   </>
